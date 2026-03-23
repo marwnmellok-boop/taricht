@@ -3,159 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مراسلة إدارة تاريشت</title>
+    <title>نادي تاريشت - النسخة الموسيقية</title>
     <style>
         :root {
             --primary: #1e3c72;
-            --secondary: #ffd700;
-            --white: #ffffff;
+            --accent: #ffd700;
+            --bg: #ffffff;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, #2a5298 100%);
+            background-color: var(--bg);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            overflow-x: hidden;
         }
 
         .card {
-            background: var(--white);
-            padding: 30px;
+            background: #fff;
+            padding: 25px;
             border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 380px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.08);
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-            border-bottom: 5px solid var(--secondary);
+            border: 1px solid #f0f0f0;
+            z-index: 10;
         }
 
-        .profile-avatar-main {
-            width: 110px;
-            height: 110px;
+        .main-avatar {
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             margin: 0 auto 15px;
-            border: 4px solid var(--primary);
-            overflow: hidden;
-            background: #eee;
+            border: 3px solid var(--primary);
+            padding: 3px;
+            background: #fff;
         }
 
-        .profile-avatar-main img { width: 100%; height: 100%; object-fit: cover; }
+        .main-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        .avatar-options { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        
-        .avatar-item {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .char-item {
             cursor: pointer;
-            border: 2px solid transparent;
+            filter: grayscale(100%);
             transition: 0.3s;
-            overflow: hidden;
         }
 
-        .avatar-item.active { border-color: var(--secondary); transform: scale(1.1); }
-        .avatar-item img { width: 100%; height: 100%; object-fit: cover; }
+        .char-item.active { filter: grayscale(0%); transform: scale(1.1); }
+        .char-item img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #eee; }
+        .char-item span { font-size: 11px; display: block; color: #666; margin-top: 4px; }
 
-        h2 { color: var(--primary); margin-bottom: 5px; }
-        p.subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
-        
         input, textarea {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #eee;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
             border-radius: 10px;
             box-sizing: border-box;
-            outline: none;
-            font-family: inherit;
+            background: #fafafa;
         }
 
         button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 12px;
             width: 100%;
             font-weight: bold;
             cursor: pointer;
-            font-size: 16px;
-            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.2);
         }
 
-        button:hover { background: #15305e; }
+        button:disabled { background: #ccc; box-shadow: none; }
 
-        .footer { margin-top: 20px; font-size: 11px; color: #999; }
+        #block-msg { color: #d9534f; font-size: 13px; display: none; margin-top: 10px; font-weight: bold; }
+
+        /* أيقونة التحكم بالصوت */
+        .audio-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
 
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="clickSound"><source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+    <audio id="whistleSound"><source src="https://assets.mixkit.co/active_storage/sfx/2051/2051-preview.mp3"></audio>
+
+    <div class="audio-control" onclick="toggleMusic()">🎵</div>
+
     <div class="card">
-        <div class="profile-avatar-main" id="display-avatar">
-            <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Avatar">
+        <div class="main-avatar" id="avatar-view">
+            <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png">
         </div>
 
-        <h2>نادي تاريشت</h2>
-        <p class="subtitle">اختر شخصيتك واكتب رسالتك للإدارة</p>
+        <h3 style="color: var(--primary); margin: 0;">نادي تاريشت</h3>
         
-        <div class="avatar-options">
-            <div class="avatar-item" onclick="changeAvatar(this, 'ميسي', 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png')">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+        <div class="char-grid">
+            <div class="char-item active" onclick="selectChar(this, 'الفريق', 'https://cdn-icons-png.flaticon.com/512/53/53283.png')">
+                <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png"><span>الفريق</span>
             </div>
-            <div class="avatar-item" onclick="changeAvatar(this, 'رونالدو', 'https://cdn-icons-png.flaticon.com/512/3135/3135768.png')">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png">
+            <div class="char-item" onclick="selectChar(this, 'ميسي', 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"><span>ميسي</span>
             </div>
-            <div class="avatar-item active" onclick="changeAvatar(this, 'شعار الفريق', 'https://cdn-icons-png.flaticon.com/512/53/53283.png')">
-                <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png">
+            <div class="char-item" onclick="selectChar(this, 'رونالدو', 'https://cdn-icons-png.flaticon.com/512/3135/3135768.png')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"><span>رونالدو</span>
+            </div>
+            <div class="char-item" onclick="selectChar(this, 'نيمار', 'https://cdn-icons-png.flaticon.com/512/3135/3135789.png')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png"><span>نيمار</span>
+            </div>
+            <div class="char-item" onclick="selectChar(this, 'مبابي', 'https://cdn-icons-png.flaticon.com/512/3135/3135823.png')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135823.png"><span>مبابي</span>
+            </div>
+            <div class="char-item" onclick="selectChar(this, 'هالاند', 'https://cdn-icons-png.flaticon.com/512/4140/4140047.png')">
+                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png"><span>هالاند</span>
             </div>
         </div>
 
-        <form id="mail-form">
-            <input type="text" id="user-name" placeholder="اسمك الكامل" required>
-            <textarea id="user-msg" rows="3" placeholder="اكتب رسالتك هنا..." required></textarea>
-            
-            <button type="button" onclick="sendMail()">فتح بريد الإرسال</button>
-        </form>
-
-        <div class="footer">
-            سيتم فتح تطبيق البريد الخاص بك لإتمام الإرسال
-        </div>
+        <input type="text" id="username" placeholder="اسمك الكامل">
+        <textarea id="message" rows="3" placeholder="اكتب رسالتك للإدارة..."></textarea>
+        
+        <button id="btnSend" onclick="sendAction()">إرسال الآن ⚽</button>
+        <div id="block-msg">⚠️ تم حظرك مؤقتاً! كثرة الإرسال تضر الفريق.</div>
     </div>
 
     <script>
-        let selectedChar = "شعار الفريق";
+        const bgMusic = document.getElementById('bgMusic');
+        const clickSound = document.getElementById('clickSound');
+        const whistle = document.getElementById('whistleSound');
+        let attempts = 0;
+        let selectedName = "شعار الفريق";
 
-        function changeAvatar(el, name, url) {
-            document.querySelectorAll('.avatar-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            document.querySelector('#display-avatar img').src = url;
-            selectedChar = name;
+        // تشغيل الموسيقى عند أول لمسة للشاشة (ضروري للمتصفحات)
+        document.body.addEventListener('click', () => { bgMusic.play(); }, {once: true});
+
+        function toggleMusic() {
+            if (bgMusic.paused) bgMusic.play();
+            else bgMusic.pause();
         }
 
-        function sendMail() {
-            const name = document.getElementById('user-name').value;
-            const msg = document.getElementById('user-msg').value;
-            const adminEmail = "marwnmellok@gmail.com";
-            
-            if(!name || !msg) {
-                alert("يرجى ملء كافة الحقول");
+        function selectChar(el, name, img) {
+            clickSound.play(); // صوت نقرة
+            document.querySelectorAll('.char-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelector('#avatar-view img').src = img;
+            selectedName = name;
+        }
+
+        function sendAction() {
+            const user = document.getElementById('username').value;
+            const msg = document.getElementById('message').value;
+            const btn = document.getElementById('btnSend');
+
+            if(!user || !msg) return alert("الرجاء إدخال البيانات");
+
+            attempts++;
+            whistle.play(); // صوت صافرة عند الإرسال
+
+            if (attempts >= 5) {
+                btn.style.display = "none";
+                document.getElementById('block-msg').style.display = "block";
+                setTimeout(() => {
+                    attempts = 0;
+                    btn.style.display = "block";
+                    document.getElementById('block-msg').style.display = "none";
+                }, 3600000); // حظر لمدة ساعة
                 return;
             }
 
-            // تجهيز نص الرسالة وتنسيقه للبريد
-            const subject = encodeURIComponent("رسالة جديدة من: " + name);
-            const body = encodeURIComponent(
-                "اسم المرسل: " + name + "\n" +
-                "الشخصية المختارة: " + selectedChar + "\n\n" +
-                "الرسالة:\n" + msg
-            );
+            // فتح البريد
+            window.location.href = `mailto:marwnmellok@gmail.com?subject=رسالة من ${user}&body=اللاعب: ${user}%0Aالشخصية: ${selectedName}%0Aالرسالة: ${msg}`;
 
-            // فتح رابط mailto الذي يحول المستخدم لتطبيق البريد
-            window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+            // عد تنازلي 3 ثواني
+            let count = 3;
+            btn.disabled = true;
+            const timer = setInterval(() => {
+                btn.innerText = `انتظر ${count}...`;
+                count--;
+                if (count < 0) {
+                    clearInterval(timer);
+                    btn.innerText = "إرسال الآن ⚽";
+                    btn.disabled = false;
+                }
+            }, 1000);
         }
     </script>
 </body>
