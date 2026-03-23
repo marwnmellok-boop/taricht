@@ -3,154 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نادي تاريشت | Tarisht FC</title>
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/53/53283.png">
+    <title>نادي تاريشت - مراسلة آمنة</title>
     <style>
         :root {
-            --primary-color: #1e3c72;
-            --secondary-color: #2a5298;
-            --accent-color: #ffd700; /* لون ذهبي رياضي */
-            --text-dark: #333;
+            --primary: #1e3c72;
+            --secondary: #2a5298;
             --white: #ffffff;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
         }
 
-        /* تصميم البطاقة */
         .card {
             background: var(--white);
-            padding: 40px 30px;
-            border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 380px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-            border-bottom: 5px solid var(--accent-color);
         }
 
-        .logo-container {
-            width: 100px;
-            height: 100px;
-            background: #f8f9fa;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 50px;
-            border: 3px solid var(--primary-color);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+        h2 { color: var(--primary); margin-bottom: 20px; }
 
-        h1 {
-            color: var(--primary-color);
-            margin: 0 0 10px 0;
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        p {
-            font-size: 15px;
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        /* تنسيق النموذج */
-        .form-group {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        input[type="text"] {
+        input, textarea {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #eee;
-            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             box-sizing: border-box;
-            outline: none;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 8px rgba(42, 82, 152, 0.2);
+            font-family: inherit;
         }
 
         button {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary);
+            color: white;
             border: none;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
             width: 100%;
-            font-size: 18px;
             font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(30, 60, 114, 0.3);
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        button:hover {
-            background: var(--secondary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(30, 60, 114, 0.4);
-        }
+        button:hover { background: var(--secondary); }
 
-        .footer {
-            margin-top: 25px;
-            font-size: 13px;
-            color: #888;
-        }
-
-        /* تأثيرات الاستجابة للهواتف */
-        @media (max-width: 480px) {
-            .card {
-                padding: 30px 20px;
-            }
+        #status {
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div class="logo-container">⚽</div>
-        <h1>فريق تاريشت</h1>
-        <p>مرحباً بك في البوابة الرسمية للفريق. <br> سجل بياناتك لتصل للإدارة فوراً.</p>
-
-        <form action="https://formspree.io/f/marwnmellok@gmail.com" method="POST">
-            <div class="form-group">
-                <label for="name">الاسم الكامل:</label>
-                <input type="text" id="name" name="الاسم" placeholder="اكتب اسمك هنا..." required>
-            </div>
+        <h2>تواصل مع الإدارة ⚽</h2>
+        <form id="secure-form">
+            <input type="email" name="email" id="email" placeholder="بريدك الإلكتروني" required>
+            <textarea name="message" id="message" rows="4" placeholder="اكتب رسالتك هنا..." required></textarea>
             
-            <input type="hidden" name="_subject" value="طلب انضمام جديد: فريق تاريشت">
-            <input type="hidden" name="_next" value="https://github.com"> <button type="submit">إرسال الطلب</button>
+            <input type="hidden" name="user_ip" id="user_ip">
+            
+            <button type="submit" id="submit-btn">إرسال الرسالة</button>
         </form>
-
-        <div class="footer">
-            تم التطوير بواسطة <b>Marwan Mellouk</b><br>
-            © 2026 Tarisht Football Team
-        </div>
+        <div id="status"></div>
     </div>
+
+    <script>
+        // 1. جلب عنوان الـ IP الخاص بالمستخدم عند فتح الصفحة
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('user_ip').value = data.ip;
+                console.log("IP Detected:", data.ip);
+            })
+            .catch(err => {
+                document.getElementById('user_ip').value = "تعذر جلب الـ IP";
+            });
+
+        // 2. معالجة إرسال النموذج
+        const form = document.getElementById("secure-form");
+        const status = document.getElementById("status");
+        const btn = document.getElementById("submit-btn");
+
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault();
+            btn.innerText = "جاري التأمين والإرسال...";
+            btn.disabled = true;
+
+            const formData = new FormData(form);
+
+            fetch("https://formspree.io/f/marwnmellok@gmail.com", {
+                method: "POST",
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            }).then(response => {
+                if (response.ok) {
+                    status.innerHTML = "✅ تم الإرسال (تم تسجيل الـ IP)";
+                    status.style.color = "green";
+                    form.reset();
+                } else {
+                    status.innerHTML = "❌ حدث خطأ في الإرسال";
+                    status.style.color = "red";
+                }
+            }).catch(() => {
+                status.innerHTML = "❌ خطأ في الاتصال";
+                status.style.color = "red";
+            }).finally(() => {
+                btn.innerText = "إرسال الرسالة";
+                btn.disabled = false;
+            });
+        });
+    </script>
 
 </body>
 </html>
-
