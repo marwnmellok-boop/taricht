@@ -3,125 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نادي تاريشت - النسخة الذكية</title>
+    <title>نادي تاريشت - النسخة الذكية المتطورة</title>
     <style>
         :root {
             --primary: #1e3c72;
             --accent: #ffd700;
             --white: #ffffff;
             --heart: #e74c3c;
-            --bg-color: #f4f7f6;
-            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --text-color: #1a1a1a;
+            --card-bg: #ffffff;
         }
 
-        /* وضع السطوع المنخفض */
         .dark-mode {
-            --bg-color: #1a1a1a;
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
             --white: #2d2d2d;
-            --text-color: #eee;
         }
 
         body, html {
             height: 100%; margin: 0; display: flex; justify-content: center;
             align-items: center; background-color: var(--bg-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: 0.3s; color: var(--text-color);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-color);
         }
 
-        /* الإعدادات */
-        .settings-bar {
-            position: absolute; top: 20px; right: 20px; z-index: 100;
+        /* شريط الإعدادات المتطور */
+        .settings-bar { position: absolute; top: 20px; right: 20px; z-index: 1000; }
+        .settings-icon { 
+            font-size: 26px; cursor: pointer; transition: 0.5s; 
+            background: var(--card-bg); padding: 10px; border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .settings-icon { font-size: 24px; cursor: pointer; animation: rotate 5s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .settings-icon:hover { transform: rotate(90deg); }
         
         .settings-menu {
-            display: none; position: absolute; top: 40px; right: 0; 
-            background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            padding: 10px; width: 180px; text-align: right; color: #333;
+            display: none; position: absolute; top: 55px; right: 0; 
+            background: var(--card-bg); border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 15px; width: 200px;
+        }
+
+        /* زر الوضع المظلم المتطور */
+        .theme-switch {
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.05);
         }
 
         .card {
-            background: var(--white); padding: 20px; border-radius: 25px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.1); width: 95%;
-            max-width: 450px; text-align: center; border: 1px solid #f0f0f0;
-            position: relative; transition: 0.3s;
+            background: var(--card-bg); padding: 25px; border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15); width: 90%;
+            max-width: 420px; text-align: center; position: relative;
         }
 
         .friend-request {
-            background: #f0f4ff; color: var(--primary); padding: 8px 15px;
-            border-radius: 20px; font-size: 13px; font-weight: bold;
-            display: inline-flex; align-items: center; gap: 5px;
-            margin-bottom: 15px; cursor: pointer; border: 1px solid var(--primary);
+            background: var(--primary); color: white; padding: 10px 20px;
+            border-radius: 50px; font-size: 14px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-bottom: 20px; cursor: pointer; border: none;
+            transition: 0.3s;
         }
 
         .char-grid {
             display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 10px; margin: 15px 0; max-height: 150px; overflow-y: auto;
-            padding: 5px; border: 1px inset #eee; border-radius: 10px;
+            gap: 12px; margin: 20px 0; max-height: 180px; overflow-y: auto;
+            padding: 10px; border: 1px solid rgba(0,0,0,0.1); border-radius: 15px;
         }
 
-        .char-item { cursor: pointer; padding: 5px; border-radius: 10px; transition: 0.3s; }
-        .char-item.active { border: 2px solid var(--primary); background: #f0f4ff; }
-        .char-item img { width: 45px; height: 45px; border-radius: 50%; }
-        .char-item span { font-size: 10px; display: block; }
+        .char-item { cursor: pointer; padding: 8px; border-radius: 12px; transition: 0.3s; border: 2px solid transparent; }
+        .char-item.active { border-color: var(--primary); background: rgba(30, 60, 114, 0.1); }
+        .char-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+        .char-item span { font-size: 11px; display: block; margin-top: 5px; }
 
         input, textarea {
-            width: 100%; padding: 10px; margin-bottom: 10px;
-            border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
-            background: var(--white); color: var(--text-color);
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            border: 1.5px solid #eee; border-radius: 12px; box-sizing: border-box;
+            background: var(--bg-color); color: var(--text-color);
         }
 
-        button {
+        .main-btn {
             background: var(--primary); color: white; border: none;
-            padding: 12px; border-radius: 10px; width: 100%;
-            font-weight: bold; cursor: pointer;
+            padding: 15px; border-radius: 15px; width: 100%;
+            font-weight: bold; cursor: pointer; font-size: 16px;
         }
 
-        /* وكيل الذكاء الاصطناعي */
+        /* واجهة الـ AI المتطورة */
         .ai-bot-btn {
-            position: fixed; bottom: 20px; left: 20px;
-            background: var(--primary); color: white; width: 60px; height: 60px;
+            position: fixed; bottom: 30px; left: 30px;
+            background: linear-gradient(135deg, var(--primary), #4a90e2);
+            color: white; width: 65px; height: 65px;
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 30px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(30, 60, 114, 0.3);
+            animation: pulse 2s infinite;
         }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         .ai-window {
-            display: none; position: fixed; bottom: 90px; left: 20px;
-            width: 300px; background: white; border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden;
-            flex-direction: column; color: #333; z-index: 1000;
+            display: none; position: fixed; bottom: 110px; left: 30px;
+            width: 320px; background: var(--card-bg); border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2); flex-direction: column; overflow: hidden; z-index: 2000;
         }
-        .ai-header { background: var(--primary); color: white; padding: 10px; font-weight: bold; }
-        .ai-chat { height: 200px; overflow-y: auto; padding: 10px; font-size: 14px; text-align: right; }
-        .ai-input { display: flex; border-top: 1px solid #eee; }
-        .ai-input input { border: none; flex: 1; padding: 10px; border-radius: 0; margin: 0; }
+        .ai-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
+        .ai-chat { height: 250px; overflow-y: auto; padding: 15px; font-size: 14px; line-height: 1.6; }
+        .ai-controls { display: flex; padding: 10px; border-top: 1px solid rgba(0,0,0,0.1); gap: 5px; }
+        .ai-controls input { margin-bottom: 0; flex: 1; border-radius: 20px; }
+        .mic-btn { background: #e74c3c; color: white; border: none; width: 40px; border-radius: 50%; cursor: pointer; }
 
-        .video-section { margin-top: 20px; border-top: 2px solid #f0f0f0; padding-top: 15px; }
-        .video-container { width: 100%; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; background: #000; }
-        .video-container iframe { width: 100%; height: 100%; border: none; }
-
-        .like-area { margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
-        .like-icon { font-size: 20px; color: #ccc; }
-        .like-area.active .like-icon { color: var(--heart); }
+        .video-section { margin-top: 25px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px; }
+        .video-container { width: 100%; border-radius: 15px; overflow: hidden; aspect-ratio: 16/9; background: #000; }
+        .like-area { margin-top: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }
+        .like-icon { font-size: 22px; color: #ccc; transition: 0.3s; }
+        .active .like-icon { color: var(--heart); transform: scale(1.2); }
     </style>
 </head>
-<body onclick="welcomeVoice()">
+<body onclick="initVoice()">
 
     <div class="settings-bar">
         <div class="settings-icon" onclick="toggleSettings()">⚙️</div>
         <div class="settings-menu" id="settingsMenu">
-            <div style="cursor: pointer; margin-bottom: 10px;" onclick="toggleDarkMode()">🌓 وضع السطوع</div>
-            <div style="color: #ccc; font-size: 12px;">👤 الحساب (قريباً)</div>
+            <div class="theme-switch" onclick="toggleDarkMode()">
+                <span>الوضع المظلم</span>
+                <span id="themeIcon">🌙</span>
+            </div>
         </div>
     </div>
 
     <div class="card">
         <div class="friend-request" onclick="requestFriendship()">
-            👤 <span>اريد صداقة مع الفريق</span>
+            👤 <span>أريد صداقة مع الفريق</span>
         </div>
 
-        <div class="char-grid">
+        <div class="char-grid" id="charGrid">
             <div class="char-item active" onclick="selChar(this, 'شعار الفريق')">
                 <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png"><span>الفريق</span>
             </div>
@@ -139,93 +153,119 @@
         <input type="text" id="name" placeholder="الاسم الكامل">
         <textarea id="msg" rows="2" placeholder="رسالتك للإدارة..."></textarea>
         
-        <button id="sendBtn" onclick="handleSend()">إرسال الرسالة</button>
+        <button class="main-btn" onclick="handleSend()">إرسال الرسالة</button>
 
         <div class="video-section">
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/inhEapj87R8"></iframe>
+                <iframe src="https://www.youtube.com/embed/inhEapj87R8" width="100%" height="100%" frameborder="0"></iframe>
             </div>
             <div class="like-area" id="likeArea" onclick="toggleLike()">
                 <span class="like-icon">❤</span>
-                <span style="font-size: 12px;">أعجبني</span>
+                <span>أعجبني</span>
             </div>
         </div>
     </div>
 
     <div class="ai-bot-btn" onclick="toggleAI()">🤖</div>
     <div class="ai-window" id="aiWindow">
-        <div class="ai-header">مساعد تاريشت الذكي</div>
-        <div class="ai-chat" id="aiChat">
-            <div>مرحباً! أنا وكيل تاريشت. كيف يمكنني مساعدتك اليوم؟</div>
+        <div class="ai-header">
+            <span>مساعد تاريشت الذكي</span>
+            <span onclick="toggleAI()" style="cursor:pointer">×</span>
         </div>
-        <div class="ai-input">
-            <input type="text" id="aiQuery" placeholder="اسألني أي شيء..." onkeypress="checkEnter(event)">
-            <button style="width: 50px; border-radius: 0;" onclick="askAI()">💬</button>
+        <div class="ai-chat" id="aiChat">
+            <div style="background: #eee; padding: 8px; border-radius: 10px; margin-bottom: 10px;">
+                مرحباً بك! أنا مساعدك. اضغط على الميكروفون للتحدث معي، أو اسألني: "كيف أستخدم الموقع؟"
+            </div>
+        </div>
+        <div class="ai-controls">
+            <input type="text" id="aiInput" placeholder="اكتب سؤالك هنا..." onkeypress="if(event.key==='Enter') askAI()">
+            <button class="mic-btn" id="micBtn" onclick="startListen()">🎤</button>
+            <button class="main-btn" style="width: 45px; padding:0" onclick="askAI()">◀</button>
         </div>
     </div>
 
     <script>
         let char = "شعار الفريق";
         let isLiked = false;
-        let hasWelcomed = false;
+        let voiceEnabled = false;
 
-        // ترحيب صوتي
-        function welcomeVoice() {
-            if (!hasWelcomed) {
-                speak("مرحباً بك في تاريشت مولاي علي");
-                hasWelcomed = true;
+        // تفعيل الصوت عند أول نقرة
+        function initVoice() {
+            if(!voiceEnabled) {
+                speak("مرحباً بك في نادي تاريشت. أنا مساعدك الذكي، كيف أخدمك؟");
+                voiceEnabled = true;
             }
         }
 
         function speak(text) {
-            const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = "ar-SA";
-            window.speechSynthesis.speak(speech);
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = "ar-SA";
+            window.speechSynthesis.speak(msg);
         }
 
-        // الإعدادات
+        // التعرف على الصوت
+        function startListen() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return alert("متصفحك لا يدعم التعرف على الصوت");
+            
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-SA';
+            document.getElementById('micBtn').style.background = '#2ecc71';
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('aiInput').value = transcript;
+                askAI();
+            };
+            recognition.onend = () => {
+                document.getElementById('micBtn').style.background = '#e74c3c';
+            };
+            recognition.start();
+        }
+
         function toggleSettings() {
-            const menu = document.getElementById('settingsMenu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            const m = document.getElementById('settingsMenu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
         }
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
         }
 
-        // وكيل الذكاء الاصطناعي
         function toggleAI() {
-            const win = document.getElementById('aiWindow');
-            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+            const w = document.getElementById('aiWindow');
+            w.style.display = w.style.display === 'flex' ? 'none' : 'flex';
         }
 
         function askAI() {
-            const input = document.getElementById('aiQuery');
+            const input = document.getElementById('aiInput');
             const chat = document.getElementById('aiChat');
-            if(!input.value) return;
+            const val = input.value.trim();
+            if(!val) return;
 
-            const userMsg = input.value;
-            chat.innerHTML += `<div style="color: blue;">أنت: ${userMsg}</div>`;
+            chat.innerHTML += `<div style="text-align:left; color:var(--primary); margin-bottom:5px;"><b>أنت:</b> ${val}</div>`;
             
-            // رد مبرمج بناءً على بيانات الموقع
-            let response = "عذراً، أنا أتعلم حالياً عن نادي تاريشت. يمكنك مراسلة الإدارة عبر النموذج!";
+            let reply = "أنا هنا لمساعدتك! يمكنك سؤالي عن كيفية استخدام الموقع.";
             
-            if(userMsg.includes("من أنت")) response = "أنا المساعد الذكي لنادي تاريشت، مبرمج لمساعدتك في تصفح الموقع.";
-            if(userMsg.includes("صداقة")) response = "يمكنك طلب الصداقة بالضغط على الزر الأزرق في أعلى الصفحة.";
-            if(userMsg.includes("ميسي") || userMsg.includes("رونالدو")) response = "نحن نحب أساطير كرة القدم! يمكنك اختيار لاعبك المفضل من القائمة.";
+            if(val.includes("كيف") && val.includes("الموقع")) {
+                reply = "سهل جداً! أولاً اختر لاعبك المفضل من المربعات، ثم اكتب اسمك ورسالتك واضغط إرسال. لا تنسَ مشاهدة الفيديو والضغط على زر أعجبني!";
+            } else if(val.includes("من أنت")) {
+                reply = "أنا وكيل ذكاء اصطناعي مخصص لنادي تاريشت، وظيفتي إرشادك وتسهيل تواصلك مع الإدارة.";
+            } else if(val.includes("صداقة")) {
+                reply = "لطلب الصداقة، اضغط على الزر الأزرق الموجود في أعلى البطاقة البيضاء.";
+            }
 
             setTimeout(() => {
-                chat.innerHTML += `<div style="font-weight: bold;">تاريشت AI: ${response}</div>`;
-                speak(response);
+                chat.innerHTML += `<div style="background:var(--primary); color:white; padding:8px; border-radius:10px; margin-bottom:10px;"><b>AI:</b> ${reply}</div>`;
+                speak(reply);
                 chat.scrollTop = chat.scrollHeight;
             }, 500);
-
             input.value = "";
         }
 
-        function checkEnter(e) { if(e.key === 'Enter') askAI(); }
-
-        // الوظائف الأساسية
         function selChar(el, name) {
             document.querySelectorAll('.char-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
@@ -239,15 +279,14 @@
 
         function requestFriendship() {
             const name = document.getElementById('name').value || "زائر";
-            window.location.href = `mailto:marwnmellok@gmail.com?subject=طلب صداقة&body=المرسل: ${name}%0Aالموضوع: أريد صداقة مع فريق تاريشت`;
+            window.location.href = `mailto:marwnmellok@gmail.com?subject=طلب صداقة&body=المرسل: ${name}`;
         }
 
         function handleSend() {
             const name = document.getElementById('name').value;
             const msg = document.getElementById('msg').value;
-            if(!name || !msg) return alert("يرجى ملء البيانات");
-            const reaction = isLiked ? "تم الإعجاب ❤️" : "بدون إعجاب";
-            window.location.href = `mailto:marwnmellok@gmail.com?subject=رسالة من ${name}&body=اللاعب: ${name}%0Aالشخصية: ${char}%0Aالتفاعل: ${reaction}%0Aالرسالة: ${msg}`;
+            if(!name || !msg) return alert("يرجى إدخال اسمك ورسالتك");
+            window.location.href = `mailto:marwnmellok@gmail.com?subject=رسالة من ${name}&body=اللاعب المختار: ${char}%0Aالرسالة: ${msg}`;
         }
     </script>
 </body>
