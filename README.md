@@ -13,6 +13,7 @@
             --card-bg: #ffffff;
             --text-color: #333;
             --success-color: #27ae60;
+            --danger-color: #e74c3c; /* لون الطوارئ */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +45,6 @@
             color: var(--secondary-color);
         }
 
-        /* تصميم مقياس السرعة */
         .gauge-container {
             position: relative;
             width: 200px;
@@ -102,7 +102,14 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* تنسيق البطارية الموحد مع الشبكة والحالة */
+        .battery-full-width {
+            grid-column: span 2;
+            background: #fdfdfd;
+            border: 1.5px dashed #ddd;
         }
 
         .stat-card {
@@ -138,6 +145,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            margin-top: 10px;
         }
 
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4); }
@@ -151,6 +159,15 @@
             padding: 10px;
             border-radius: 8px;
             border-right: 4px solid #f1c40f;
+        }
+
+        /* تحريك أيقونة الطوارئ عند ضعف البطارية */
+        @keyframes battery-blink {
+            50% { opacity: 0.5; }
+        }
+        .emergency-mode { 
+            color: var(--danger-color) !important; 
+            animation: battery-blink 1s infinite;
         }
 
         @keyframes radar-pulse {
@@ -175,6 +192,14 @@
     </div>
 
     <div class="stats-grid">
+        <div class="stat-card battery-full-width">
+            <i id="batt-icon" class="fas fa-battery-full"></i>
+            <div class="stat-info">
+                <span class="stat-label" id="batt-status-label">حالة الطاقة</span>
+                <span class="stat-value" id="battery-level">--%</span>
+            </div>
+        </div>
+
         <div class="stat-card">
             <i class="fas fa-microchip"></i>
             <div class="stat-info">
@@ -201,7 +226,50 @@
 </div>
 
 <script>
-    // 1. تحديث معلومات الشبكة
+    // --- وظائف البطارية الذكية ---
+    function updateBattery(battery) {
+        const level = Math.round(battery.level * 100);
+        const battText = document.getElementById('battery-level');
+        const battIcon = document.getElementById('batt-icon');
+        const battLabel = document.getElementById('batt-status-label');
+
+        battText.innerText = level + '%';
+
+        // تصفير الأنماط السابقة
+        battIcon.className = "fas";
+        battIcon.classList.remove('emergency-mode');
+        battText.classList.remove('emergency-mode');
+
+        if (battery.charging) {
+            battIcon.classList.add('fa-battery-charging');
+            battIcon.style.color = "var(--success-color)";
+            battLabel.innerText = "جاري الشحن...";
+        } else {
+            battLabel.innerText = "طاقة البطارية";
+            if (level <= 20) {
+                battIcon.classList.add('fa-battery-empty', 'emergency-mode');
+                battText.classList.add('emergency-mode');
+                battLabel.innerText = "تنبيه: طوارئ طاقة!";
+                battLabel.style.color = "var(--danger-color)";
+            } else if (level <= 50) {
+                battIcon.classList.add('fa-battery-half');
+                battIcon.style.color = "#f39c12";
+            } else {
+                battIcon.classList.add('fa-battery-full');
+                battIcon.style.color = "var(--success-color)";
+            }
+        }
+    }
+
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(updateBattery);
+        navigator.getBattery().then(batt => {
+            batt.addEventListener('levelchange', () => updateBattery(batt));
+            batt.addEventListener('chargingchange', () => updateBattery(batt));
+        });
+    }
+
+    // --- بقية الأكواد الأصلية دون تغيير ---
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     function updateNetworkInfo() {
         const typeElement = document.getElementById('network-type');
@@ -213,7 +281,6 @@
     }
     updateNetworkInfo();
 
-    // 2. دالة التحكم في المقياس
     function setGaugeValue(value) {
         const maxSpeedForGauge = 100; 
         const speed = Math.min(value, maxSpeedForGauge);
@@ -222,7 +289,6 @@
         document.getElementById('speed-text').innerText = value.toFixed(1);
     }
 
-    // 3. عملية "زيادة السرعة" (فحص حقيقي مع تغيير المسمى)
     function runSpeedBoost() {
         const startBtn = document.getElementById('start-btn');
         const speedText = document.getElementById('speed-text');
@@ -233,10 +299,8 @@
         startBtn.innerHTML = `<i class="fas fa-sync fa-spin"></i> جاري التحسين...`;
         sysStatus.innerText = "جاري التحسين...";
         sysStatus.style.color = "var(--primary-color)";
-        
         gaugeZone.classList.add('scanning');
 
-        // محاكاة تقنية (تحميل صورة لقياس السرعة الفعلية)
         const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pleiades_large.jpg?n=" + Math.random();
         const download = new Image();
         let startTime = new Date().getTime();
@@ -246,7 +310,6 @@
             const duration = (endTime - startTime) / 1000;
             const bitsLoaded = 5211913 * 8; 
             const speedMbps = (bitsLoaded / duration) / (1024 * 1024);
-
             setGaugeValue(speedMbps);
             
             setTimeout(() => {
@@ -255,11 +318,7 @@
                 sysStatus.innerText = "أداء مثالي";
                 sysStatus.style.color = "var(--success-color)";
                 gaugeZone.classList.remove('scanning');
-                
-                // إعادة الزر لحالته بعد 3 ثواني
-                setTimeout(() => {
-                    startBtn.innerHTML = `<i class="fas fa-rocket"></i> تحسين وزيادة السرعة الآن`;
-                }, 3000);
+                setTimeout(() => { startBtn.innerHTML = `<i class="fas fa-rocket"></i> تحسين وزيادة السرعة الآن`; }, 3000);
             }, 1000);
         };
 
@@ -269,7 +328,6 @@
             startBtn.innerHTML = `<i class="fas fa-redo"></i> حاول مرة أخرى`;
             gaugeZone.classList.remove('scanning');
         }
-
         download.src = imageAddr;
     }
 </script>
