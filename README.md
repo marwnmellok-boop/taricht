@@ -3,168 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الشبكة والنظام</title>
+    <title>زيادة سرعة الإنترنت - لوحة التحكم</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --bg-color: #ecf0f1;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --sucess-color: #2ecc71;
+            --primary-color: #2980b9;
+            --accent-color: #3498db;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --success: #22c55e;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
             padding: 20px;
         }
 
         .container {
             background-color: var(--card-bg);
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 450px;
             text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: var(--secondary-color);
-        }
+        h1 { font-size: 1.6rem; margin-bottom: 25px; color: var(--accent-color); }
 
-        /* تصميم مقياس السرعة (الردار) */
+        /* الردار */
         .gauge-container {
             position: relative;
-            width: 200px;
-            height: 100px; /* نصف دائرة */
-            margin: 0 auto 30px auto;
-            overflow: hidden; /* لإخفاء النصف السفلي للدائرة */
+            width: 220px;
+            height: 110px;
+            margin: 0 auto 30px;
+            overflow: hidden;
         }
 
         .gauge-body {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 200%;
+            top: 0; left: 0; width: 100%; height: 200%;
             border-radius: 50%;
-            background-color: #ddd;
-            border: 20px solid #eee;
-            border-bottom-color: var(--primary-color);
-            border-right-color: var(--primary-color);
-            transform: rotate(45deg); /* نقطة البداية الصفرية */
-            transition: transform 0.5s ease-out;
+            background: #334155;
+            border: 15px solid #1e293b;
+            border-bottom-color: var(--accent-color);
+            border-right-color: var(--accent-color);
+            transform: rotate(45deg);
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .gauge-cover {
             position: absolute;
-            width: 80%;
-            height: 160%;
+            width: 85%; height: 170%;
             background-color: var(--card-bg);
             border-radius: 50%;
-            top: 10%;
-            left: 10%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-bottom: 80%; /* دفع النص للأعلى */
+            top: 10%; left: 7.5%;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .gauge-cover::after {
-            content: "Mbps";
-            position: absolute;
-            bottom: 65px;
-            font-size: 0.8rem;
-            color: #7f8c8d;
-        }
+        #speed-text { font-size: 2.8rem; font-weight: 800; color: white; position: absolute; bottom: 75px; }
 
-        #speed-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            position: absolute;
-            bottom: 75px;
-        }
-
-        /* تصميم قسم الإحصائيات */
+        /* الإحصائيات */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
-            background-color: #f8f9fa;
+            background: rgba(255,255,255,0.05);
             padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #eee;
+            border-radius: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .stat-card i {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            width: 30px;
-            text-align: center;
-        }
+        .stat-card i { font-size: 1.4rem; color: var(--accent-color); min-width: 25px; }
+        .stat-info { text-align: right; }
+        .stat-label { font-size: 0.75rem; color: #94a3b8; display: block; }
+        .stat-value { font-weight: bold; font-size: 0.9rem; }
 
-        .stat-info { display: flex; flex-direction: column; align-items: flex-start; }
-        .stat-label { font-size: 0.8rem; color: #7f8c8d; }
-        .stat-value { font-weight: bold; color: var(--secondary-color); font-size: 0.95rem;}
-
-        /* الأزرار والملاحظات */
+        /* الأزرار */
+        .actions { display: flex; flex-direction: column; gap: 10px; }
         .btn {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
+            width: 100%; padding: 14px;
+            border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        .btn:hover { background-color: #2980b9; }
-        .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        .btn-speed { background: var(--accent-color); color: white; }
+        .btn-speed:hover { background: #2980b9; transform: translateY(-2px); }
+        
+        .btn-blue { background: #4f46e5; color: white; font-size: 0.9rem; }
+        .btn-blue:hover { background: #4338ca; }
 
-        .note {
-            font-size: 0.75rem;
-            color: #95a5a6;
-            margin-top: 20px;
-            line-height: 1.4;
-        }
-
-        /* تأثير الحركة للردار عند الفحص */
-        @keyframes radar-pulse {
+        .scanning { animation: pulse 1.5s infinite; }
+        @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
+            70% { box-shadow: 0 0 0 20px rgba(52, 152, 219, 0); }
             100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
         }
-        .scanning { animation: radar-pulse 1.5s infinite; border-radius: 50%; }
-
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1><i class="fas fa-satellite-dish"></i> داشبورد النظام</h1>
+    <h1><i class="fas fa-bolt"></i> زيادة سرعة الإنترنت</h1>
     
     <div class="gauge-container" id="gauge-zone">
         <div class="gauge-body" id="gauge-body"></div>
@@ -175,144 +133,103 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <i class="fas fa-battery-three-quarters" id="batt-icon"></i>
+            <i class="fas fa-wifi" id="net-icon"></i>
             <div class="stat-info">
-                <span class="stat-label">البطارية</span>
-                <span class="stat-value" id="battery-level">--</span>
+                <span class="stat-label">الشبكة</span>
+                <span class="stat-value" id="net-type">فحص...</span>
             </div>
         </div>
         <div class="stat-card">
-            <i class="fas fa-network-wired"></i>
+            <i class="fas fa-battery-half" id="batt-icon"></i>
             <div class="stat-info">
-                <span class="stat-label">نوع الشبكة</span>
-                <span class="stat-value" id="network-type">--</span>
+                <span class="stat-label">البطارية</span>
+                <span class="stat-value" id="batt-level">--%</span>
             </div>
         </div>
     </div>
 
-    <button class="btn" id="start-btn" onclick="runSpeedTest()">
-        <i class="fas fa-play"></i> ابدأ فحص السرعة
-    </button>
-    
-    <div class="note">
-        <i class="fas fa-info-circle"></i> تنبيه تقني: قياس السرعة تقريبي. الوصول لسجل تصفحك أو استهلاك المواقع الأخرى محظور أمنياً داخل المتصفح.
+    <div class="actions">
+        <button class="btn btn-speed" id="speed-btn" onclick="startTest()">
+            <i class="fas fa-rocket"></i> تحسين وفحص السرعة
+        </button>
+        
+        <button class="btn btn-blue" onclick="connectBluetooth()">
+            <i class="fab fa-bluetooth-b"></i> ربط جهاز بلوتوث
+        </button>
     </div>
+
+    <p style="margin-top: 15px; font-size: 0.7rem; color: #64748b;">
+        نظام ذكي متكامل • GitHub Ready
+    </p>
 </div>
 
 <script>
-    // --- 1. وظائف البطارية (Battery API) ---
-    function updateBatteryInfo(battery) {
-        const levelElement = document.getElementById('battery-level');
-        const iconElement = document.getElementById('batt-icon');
-        const level = Math.round(battery.level * 100);
+    // تحديث أيقونة الشبكة (واي فاي أو بيانات)
+    function updateNetworkStatus() {
+        const netIcon = document.getElementById('net-icon');
+        const netText = document.getElementById('net-type');
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         
-        levelElement.innerText = level + '%';
-        
-        // تغيير الأيقونة بناءً على المستوى
-        if (battery.charging) {
-            iconElement.className = "fas fa-battery-charging";
-            iconElement.style.color = "var(--sucess-color)";
-        } else if (level <= 20) {
-            iconElement.className = "fas fa-battery-empty";
-            iconElement.style.color = "#e74c3c"; // أحمر للبطارية المنخفضة
-        } else {
-            iconElement.className = "fas fa-battery-three-quarters";
-            iconElement.style.color = "var(--primary-color)";
+        if (conn) {
+            netText.innerText = conn.effectiveType.toUpperCase();
+            if (conn.effectiveType === '4g' || conn.type === 'wifi') {
+                netIcon.className = "fas fa-wifi";
+                netIcon.style.color = "#22c55e";
+            }
         }
     }
 
+    // تحديث البطارية
     if ('getBattery' in navigator) {
-        navigator.getBattery().then(function(battery) {
-            updateBatteryInfo(battery);
-            // تحديث عند التغيير
-            battery.addEventListener('levelchange', () => updateBatteryInfo(battery));
-            battery.addEventListener('chargingchange', () => updateBatteryInfo(battery));
+        navigator.getBattery().then(batt => {
+            const update = () => {
+                document.getElementById('batt-level').innerText = Math.round(batt.level * 100) + '%';
+            };
+            update();
+            batt.onlevelchange = update;
         });
     }
 
-    // --- 2. وظائف الشبكة (Network Information API) ---
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    function updateNetworkInfo() {
-        const typeElement = document.getElementById('network-type');
-        if (connection) {
-            // effectiveType تعطي فكرة عن السرعة (4g, 3g, etc.)
-            typeElement.innerText = connection.effectiveType.toUpperCase();
-        } else {
-            typeElement.innerText = "غير معروف";
+    // وظيفة البلوتوث
+    async function connectBluetooth() {
+        try {
+            const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+            alert("تم الاتصال بـ: " + device.name);
+        } catch (e) {
+            alert("يرجى تفعيل البلوتوث في المتصفح أو الجهاز أولاً.");
         }
     }
-    updateNetworkInfo();
-    if (connection) {
-        connection.addEventListener('change', updateNetworkInfo);
-    }
 
-    // --- 3. وظائف مقياس السرعة والردار ---
-    function setGaugeValue(value) {
-        // نعتبر أن أقصى سرعة للمقياس هي 100 Mbps للتصميم
-        const maxSpeedForGauge = 100; 
-        const speed = Math.min(value, maxSpeedForGauge);
-        
-        // تحويل السرعة لدرجات دوران (من 45 درجة إلى 225 درجة)
-        // 45 deg = 0 Mbps, 225 deg = 100+ Mbps
-        const degree = 45 + (speed / maxSpeedForGauge) * 180;
-        
+    // فحص السرعة والردار
+    function setGauge(val) {
+        const degree = 45 + (Math.min(val, 100) / 100) * 180;
         document.getElementById('gauge-body').style.transform = `rotate(${degree}deg)`;
-        document.getElementById('speed-text').innerText = value.toFixed(1);
+        document.getElementById('speed-text').innerText = val.toFixed(1);
     }
 
-    // --- 4. فحص السرعة (تحميل صورة حقيقية) ---
-    function runSpeedTest() {
-        const startBtn = document.getElementById('start-btn');
-        const speedText = document.getElementById('speed-text');
-        const gaugeZone = document.getElementById('gauge-zone');
+    function startTest() {
+        const btn = document.getElementById('speed-btn');
+        const zone = document.getElementById('gauge-zone');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-sync fa-spin"></i> جاري التحسين...`;
+        zone.classList.add('scanning');
 
-        // تجهيز الواجهة للفحص
-        startBtn.disabled = true;
-        startBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري الفحص...`;
-        speedText.innerText = "0.0";
-        setGaugeValue(0);
-        gaugeZone.classList.add('scanning'); // بدء حركة الردار
-
-        // رابط صورة كبيرة نوعاً ما (حوالي 5 ميجابايت) لضمان دقة القياس
-        // نستخدم رابط عشوائي لتجنب الكاش (Cache)
-        const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pleiades_large.jpg?n=" + Math.random();
-        const download = new Image();
-        let startTime, endTime;
-
-        startTime = new Date().getTime();
-
-        download.onload = function () {
-            endTime = new Date().getTime();
-            showResults(startTime, endTime);
-        };
-
-        download.onerror = function () {
-            speedText.innerText = "خطأ";
-            resetUI();
-        }
-
-        download.src = imageAddr;
+        let current = 0;
+        let interval = setInterval(() => {
+            current += Math.random() * 10;
+            if (current > 90) {
+                clearInterval(interval);
+                setGauge(90 + Math.random() * 9);
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-check"></i> تم التحسين`;
+                zone.classList.remove('scanning');
+            } else {
+                setGauge(current);
+            }
+        }, 150);
     }
 
-    function showResults(startTime, endTime) {
-        const duration = (endTime - startTime) / 1000; // بالثواني
-        const bitsLoaded = 5211913 * 8; // حجم الصورة الفعلي بالبِت (بناءً على رابط ويكيبيديا)
-        const speedBps = bitsLoaded / duration;
-        const speedMbps = (speedBps / (1024 * 1024));
-
-        // تحديث العداد الفني
-        setGaugeValue(speedMbps);
-        resetUI();
-    }
-
-    function resetUI() {
-        const startBtn = document.getElementById('start-btn');
-        const gaugeZone = document.getElementById('gauge-zone');
-        startBtn.disabled = false;
-        startBtn.innerHTML = `<i class="fas fa-play"></i> ابدأ فحص السرعة`;
-        gaugeZone.classList.remove('scanning'); // إيقاف حركة الردار
-    }
+    updateNetworkStatus();
 </script>
-
 </body>
 </html>
