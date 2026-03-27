@@ -3,145 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رادار تاريشت - النسخة الاحترافية</title>
+    <title>رادار تاريشت - تتبع اللاعبين 🛰️</title>
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
     <style>
-        :root { --primary: #1e3c72; --accent: #2ecc71; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
+        :root { --primary: #1e3c72; --bg: #f4f7f6; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
         
-        .radar-circle { width: 80px; height: 80px; border: 3px solid var(--primary); border-radius: 50%; margin: 0 auto 20px; position: relative; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(30, 60, 114, 0.4); } 100% { box-shadow: 0 0 0 20px rgba(30, 60, 114, 0); } }
-
-        .user-list { background: #fff; border: 1px solid #eee; border-radius: 15px; margin: 20px 0; max-height: 200px; overflow-y: auto; text-align: right; }
-        .user-item { padding: 12px 15px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
-        .user-item:hover { background: #eef5ff; }
-        .user-item span { font-weight: bold; color: #333; }
-        .connect-badge { background: var(--accent); color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; }
-
+        #map { height: 60vh; width: 100%; border-bottom: 5px solid var(--primary); }
+        
+        .control-panel { padding: 20px; background: white; border-radius: 25px 25px 0 0; margin-top: -20px; position: relative; z-index: 1000; box-shadow: 0 -10px 20px rgba(0,0,0,0.1); height: 40vh; overflow-y: auto; }
+        
         input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        button { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; }
         
-        #chat-ui { display: none; border-top: 2px solid #eee; padding-top: 20px; }
-        #messages { height: 180px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 10px; margin-bottom: 10px; text-align: right; }
+        .player-card { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .distance { color: #ff4757; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="radar-circle">📡</div>
-    <h2 id="title">رادار تاريشت</h2>
-    <p id="status-text" style="font-size: 13px; color: #666;">سجل اسمك لتظهر للأجهزة القريبة</p>
+<div id="map"></div>
 
-    <div id="login-section">
-        <input type="text" id="username" placeholder="اكتب اسمك الحقيقي">
-        <button onclick="startRadar()">تشغيل الرادار الآن</button>
+<div class="control-panel">
+    <div id="login-screen">
+        <h3>رادار نادي تاريشت 📡</h3>
+        <p style="font-size: 13px; color: #666;">سيظهر موقعك للاعبين الآخرين في النادي</p>
+        <input type="text" id="playerName" placeholder="ادخل اسمك كلاعب">
+        <button onclick="joinRadar()">دخول الرادار</button>
     </div>
 
-    <div id="radar-section" style="display:none;">
-        <div id="userList" class="user-list">
-            <p style="padding: 10px; font-size: 12px; color: #999;">جاري البحث عن متصلين...</p>
-        </div>
-
-        <div id="chat-ui">
-            <p id="chatting-with" style="font-size: 12px; font-weight: bold;"></p>
-            <div id="messages"></div>
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="msgInput" placeholder="اكتب رسالة..." style="margin:0;">
-                <button onclick="sendMsg()" style="width: 80px;">إرسال</button>
-            </div>
-        </div>
+    <div id="radar-screen" style="display:none;">
+        <h4>اللاعبون القريبون منك:</h4>
+        <div id="playersList"></div>
     </div>
 </div>
 
 <script>
-    // إعدادات Firebase (نسخة تجريبية عامة للتعلم)
-    const firebaseConfig = {
-        databaseURL: "https://tarisht-radar-default-rtdb.firebaseio.com/" 
-    };
+    // إعداد Firebase (قاعدة بيانات لحظية)
+    const firebaseConfig = { databaseURL: "https://tarisht-radar-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let peer, conn, myName;
+    let map, myMarker, playersMarkers = {};
+    let myId = "";
 
-    function startRadar() {
-        myName = document.getElementById('username').value.trim();
-        if(!myName) return alert("الرجاء إدخال الاسم");
+    // تهيئة الخريطة (تبدأ بموقع افتراضي حتى نحصل على GPS)
+    map = L.map('map').setView([33.5731, -7.5898], 13); // إحداثيات الدار البيضاء كمثال
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // 1. إعداد PeerJS للاتصال المباشر
-        peer = new Peer(myName);
+    function joinRadar() {
+        myId = document.getElementById('playerName').value.trim();
+        if(!myId) return alert("يرجى كتابة الاسم");
 
-        peer.on('open', (id) => {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('radar-section').style.display = 'block';
-            document.getElementById('status-text').innerText = "أنت الآن مرئي للجميع باسم: " + id;
-
-            // 2. تسجيل الاسم في Firebase ليراك الآخرون
-            const userRef = db.ref('online_users/' + id);
-            userRef.set({ name: id, status: "online" });
-            userRef.onDisconnect().remove(); // حذف الاسم تلقائياً عند إغلاق المتصفح
-
-            listenForUsers();
-        });
-
-        peer.on('connection', (connection) => {
-            conn = connection;
-            setupChat();
-        });
+        if (navigator.geolocation) {
+            // تتبع الموقع بشكل حي ومستمر
+            navigator.geolocation.watchPosition(updateMyLocation, handleError, {
+                enableHighAccuracy: true
+            });
+            
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('radar-screen').style.display = 'block';
+            
+            listenForPlayers();
+        } else {
+            alert("متصفحك لا يدعم نظام تحديد المواقع GPS");
+        }
     }
 
-    // 3. مراقبة قائمة المستخدمين في Firebase وتحديث القائمة تلقائياً
-    function listenForUsers() {
-        db.ref('online_users').on('value', (snapshot) => {
-            const users = snapshot.val();
-            const listDiv = document.getElementById('userList');
+    function updateMyLocation(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        // تحديث الخريطة الخاصة بي
+        if (!myMarker) {
+            myMarker = L.marker([lat, lng]).addTo(map).bindPopup("أنا (" + myId + ")").openPopup();
+            map.setView([lat, lng], 15);
+        } else {
+            myMarker.setLatLng([lat, lng]);
+        }
+
+        // إرسال الموقع لـ Firebase ليراه الآخرون
+        db.ref('players/' + myId).set({
+            name: myId,
+            lat: lat,
+            lng: lng,
+            lastSeen: Date.now()
+        });
+        
+        // حذف اللاعب عند الخروج
+        db.ref('players/' + myId).onDisconnect().remove();
+    }
+
+    function listenForPlayers() {
+        db.ref('players').on('value', snapshot => {
+            const players = snapshot.val();
+            const listDiv = document.getElementById('playersList');
             listDiv.innerHTML = "";
 
-            for (let id in users) {
-                if (id === myName) continue; // لا تظهر اسمك لنفسك
+            for (let id in players) {
+                if (id === myId) continue;
+
+                const p = players[id];
                 
-                const item = document.createElement('div');
-                item.className = 'user-item';
-                item.innerHTML = `<span>👤 ${id}</span> <div class="connect-badge">طلب مراسلة</div>`;
-                item.onclick = () => connectTo(id);
-                listDiv.appendChild(item);
+                // تحديث العلامات على الخريطة
+                if (playersMarkers[id]) {
+                    playersMarkers[id].setLatLng([p.lat, p.lng]);
+                } else {
+                    playersMarkers[id] = L.marker([p.lat, p.lng], {
+                        icon: L.divIcon({className: 'other-player', html: '📍', iconSize: [20, 20]})
+                    }).addTo(map).bindPopup(p.name);
+                }
+
+                // حساب المسافة وعرضها في القائمة
+                const dist = calculateDistance(myMarker.getLatLng().lat, myMarker.getLatLng().lng, p.lat, p.lng);
+                listDiv.innerHTML += `
+                    <div class="player-card">
+                        <span>👤 ${p.name}</span>
+                        <span class="distance">يبعد ${dist.toFixed(2)} كم</span>
+                    </div>
+                `;
             }
-            if (listDiv.innerHTML === "") listDiv.innerHTML = '<p style="padding:10px; font-size:12px;">لا يوجد أحد قريب حالياً...</p>';
         });
     }
 
-    function connectTo(targetId) {
-        conn = peer.connect(targetId);
-        setupChat();
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2-lat1) * Math.PI / 180;
+        const dLon = (lon2-lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
     }
 
-    function setupChat() {
-        document.getElementById('chat-ui').style.display = 'block';
-        document.getElementById('chatting-with').innerText = "دردشة مع: " + conn.peer;
-        
-        conn.on('data', (data) => {
-            appendMessage(conn.peer, data, 'blue');
-        });
-    }
-
-    function sendMsg() {
-        const input = document.getElementById('msgInput');
-        const text = input.value;
-        if(!text) return;
-        
-        conn.send(text);
-        appendMessage("أنا", text, 'green');
-        input.value = "";
-    }
-
-    function appendMessage(sender, text, color) {
-        const msgDiv = document.getElementById('messages');
-        msgDiv.innerHTML += `<div><b style="color:${color}">${sender}:</b> ${text}</div>`;
-        msgDiv.scrollTop = msgDiv.scrollHeight;
+    function handleError(err) {
+        alert("خطأ: يرجى تفعيل الموقع (GPS) وتجربة الدخول عبر رابط https");
     }
 </script>
 
