@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رادار تاريشت - تتبع اللاعبين 🛰️</title>
+    <title>رادار تاريشت - خريطة الأفاتار 🗺️</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,138 +11,140 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --primary: #1e3c72; --bg: #f4f7f6; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
+        :root { --primary: #1e3c72; --accent: #00d2ff; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         
-        #map { height: 60vh; width: 100%; border-bottom: 5px solid var(--primary); }
+        #map { height: 100vh; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         
-        .control-panel { padding: 20px; background: white; border-radius: 25px 25px 0 0; margin-top: -20px; position: relative; z-index: 1000; box-shadow: 0 -10px 20px rgba(0,0,0,0.1); height: 40vh; overflow-y: auto; }
+        /* واجهة التحكم العائمة */
+        .overlay-ui {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 2000; width: 90%; max-width: 380px;
+            background: rgba(255, 255, 255, 0.95); padding: 20px;
+            border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center; backdrop-filter: blur(10px);
+        }
+
+        /* تصميم الأفاتار على الخريطة */
+        .avatar-marker {
+            background: white; border: 3px solid var(--primary);
+            border-radius: 50%; overflow: hidden; width: 45px !important; height: 45px !important;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        .avatar-marker img { width: 100%; height: 100%; object-fit: cover; }
+
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #ddd; border-radius: 15px; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 16px; }
         
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        
-        .player-card { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
-        .distance { color: #ff4757; font-weight: bold; }
+        #status { font-size: 12px; color: #555; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div id="map"></div>
 
-<div class="control-panel">
+<div class="overlay-ui">
     <div id="login-screen">
-        <h3>رادار نادي تاريشت 📡</h3>
-        <p style="font-size: 13px; color: #666;">سيظهر موقعك للاعبين الآخرين في النادي</p>
-        <input type="text" id="playerName" placeholder="ادخل اسمك كلاعب">
-        <button onclick="joinRadar()">دخول الرادار</button>
+        <h3>رادار تاريشت 📡</h3>
+        <p id="status">الرجاء تفعيل الـ GPS والسماح بالوصول للموقع</p>
+        <input type="text" id="username" placeholder="اكتب اسمك للمشاركة">
+        <button onclick="joinRadar()">تفعيل الأفاتار على الخريطة</button>
     </div>
 
-    <div id="radar-screen" style="display:none;">
-        <h4>اللاعبون القريبون منك:</h4>
-        <div id="playersList"></div>
+    <div id="radar-info" style="display:none;">
+        <p>أنت متصل الآن كـ: <b id="display-name" style="color:var(--primary)"></b></p>
+        <div id="nearby-count" style="font-size: 11px; color:green;">جاري البحث عن لاعبين قريبين...</div>
     </div>
 </div>
 
 <script>
-    // إعداد Firebase (قاعدة بيانات لحظية)
+    // إعدادات Firebase
     const firebaseConfig = { databaseURL: "https://tarisht-radar-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let map, myMarker, playersMarkers = {};
-    let myId = "";
+    let myName = "";
+    let myAvatar = "";
 
-    // تهيئة الخريطة (تبدأ بموقع افتراضي حتى نحصل على GPS)
-    map = L.map('map').setView([33.5731, -7.5898], 13); // إحداثيات الدار البيضاء كمثال
+    // إنشاء الخريطة
+    map = L.map('map', { zoomControl: false }).setView([33.5731, -7.5898], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     function joinRadar() {
-        myId = document.getElementById('playerName').value.trim();
-        if(!myId) return alert("يرجى كتابة الاسم");
+        myName = document.getElementById('username').value.trim();
+        if(!myName) return alert("يرجى كتابة اسمك");
+
+        // توليد أفاتار عشوائي بناءً على الاسم من خدمة Adlee (مجانية)
+        myAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${myName}`;
 
         if (navigator.geolocation) {
-            // تتبع الموقع بشكل حي ومستمر
-            navigator.geolocation.watchPosition(updateMyLocation, handleError, {
-                enableHighAccuracy: true
-            });
-            
+            navigator.geolocation.watchPosition(position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                updateMapAndFirebase(lat, lng);
+            }, () => alert("فشل تحديد الموقع. تأكد من تفعيل GPS و HTTPS"), { enableHighAccuracy: true });
+
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('radar-screen').style.display = 'block';
+            document.getElementById('radar-info').style.display = 'block';
+            document.getElementById('display-name').innerText = myName;
             
-            listenForPlayers();
-        } else {
-            alert("متصفحك لا يدعم نظام تحديد المواقع GPS");
+            listenForOthers();
         }
     }
 
-    function updateMyLocation(position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+    function updateMapAndFirebase(lat, lng) {
+        // 1. تحديث موقعي على خريطتي
+        const icon = L.divIcon({
+            className: 'avatar-marker',
+            html: `<img src="${myAvatar}" alt="avatar">`,
+            iconSize: [45, 45]
+        });
 
-        // تحديث الخريطة الخاصة بي
         if (!myMarker) {
-            myMarker = L.marker([lat, lng]).addTo(map).bindPopup("أنا (" + myId + ")").openPopup();
-            map.setView([lat, lng], 15);
+            myMarker = L.marker([lat, lng], { icon: icon }).addTo(map).bindPopup("أنت: " + myName).openPopup();
+            map.setView([lat, lng], 16);
         } else {
             myMarker.setLatLng([lat, lng]);
         }
 
-        // إرسال الموقع لـ Firebase ليراه الآخرون
-        db.ref('players/' + myId).set({
-            name: myId,
+        // 2. إرسال البيانات لـ Firebase (الاسم، الموقع، الأفاتار)
+        db.ref('players/' + myName).set({
+            name: myName,
             lat: lat,
             lng: lng,
-            lastSeen: Date.now()
+            avatar: myAvatar,
+            time: Date.now()
         });
-        
-        // حذف اللاعب عند الخروج
-        db.ref('players/' + myId).onDisconnect().remove();
+        db.ref('players/' + myName).onDisconnect().remove();
     }
 
-    function listenForPlayers() {
+    function listenForOthers() {
         db.ref('players').on('value', snapshot => {
             const players = snapshot.val();
-            const listDiv = document.getElementById('playersList');
-            listDiv.innerHTML = "";
+            let count = 0;
 
             for (let id in players) {
-                if (id === myId) continue;
-
+                if (id === myName) continue;
+                count++;
                 const p = players[id];
-                
-                // تحديث العلامات على الخريطة
+
+                const otherIcon = L.divIcon({
+                    className: 'avatar-marker',
+                    html: `<img src="${p.avatar}" alt="avatar">`,
+                    iconSize: [45, 45]
+                });
+
                 if (playersMarkers[id]) {
                     playersMarkers[id].setLatLng([p.lat, p.lng]);
                 } else {
-                    playersMarkers[id] = L.marker([p.lat, p.lng], {
-                        icon: L.divIcon({className: 'other-player', html: '📍', iconSize: [20, 20]})
-                    }).addTo(map).bindPopup(p.name);
+                    playersMarkers[id] = L.marker([p.lat, p.lng], { icon: otherIcon })
+                        .addTo(map).bindPopup(p.name);
                 }
-
-                // حساب المسافة وعرضها في القائمة
-                const dist = calculateDistance(myMarker.getLatLng().lat, myMarker.getLatLng().lng, p.lat, p.lng);
-                listDiv.innerHTML += `
-                    <div class="player-card">
-                        <span>👤 ${p.name}</span>
-                        <span class="distance">يبعد ${dist.toFixed(2)} كم</span>
-                    </div>
-                `;
             }
+            document.getElementById('nearby-count').innerText = `يوجد ${count} لاعبين آخرين على الخريطة`;
         });
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
-        const dLat = (lat2-lat1) * Math.PI / 180;
-        const dLon = (lon2-lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
-
-    function handleError(err) {
-        alert("خطأ: يرجى تفعيل الموقع (GPS) وتجربة الدخول عبر رابط https");
     }
 </script>
 
