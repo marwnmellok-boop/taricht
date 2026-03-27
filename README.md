@@ -3,193 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نادي تاريشت - النظام الشامل</title>
+    <title>نادي تاريشت - شبكة البلوتوث الآمنة</title>
     <style>
         :root {
             --primary: #1e3c72;
             --bt-blue: #0082fc;
-            --bg-color: #f4f7f6;
+            --bg-color: #f0f2f5;
             --card-bg: #ffffff;
-            --text-color: #1a1a1a;
             --sent-msg: #dcf8c6;
+            --read-blue: #34b7f1;
+            --danger: #e74c3c;
         }
 
-        body, html {
-            height: 100%; margin: 0; display: flex; justify-content: center;
-            align-items: center; background-color: var(--bg-color);
-            font-family: 'Segoe UI', Tahoma, sans-serif; color: var(--text-color);
-        }
+        body, html { height: 100%; margin: 0; display: flex; justify-content: center; align-items: center; background: var(--bg-color); font-family: 'Segoe UI', sans-serif; }
 
-        /* البطاقة الرئيسية */
-        .card {
-            background: var(--card-bg); padding: 20px; border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 95%; max-width: 420px;
-            text-align: center; position: relative;
+        /* الرادار والأجهزة */
+        .radar-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd; }
+        .device-card { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: white; padding: 10px; margin-bottom: 5px; border-radius: 10px; border: 1px solid #eee;
         }
-
-        /* شبكة الشخصيات */
-        .char-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 10px; margin: 15px 0; max-height: 160px; overflow-y: auto;
-            padding: 10px; border: 1px solid #eee; border-radius: 15px;
-        }
-        .char-item { cursor: pointer; padding: 5px; border-radius: 10px; transition: 0.2s; }
-        .char-item.active { background: rgba(30, 60, 114, 0.1); border: 1.5px solid var(--primary); }
-        .char-item img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
-        .char-item span { font-size: 10px; display: block; margin-top: 3px; }
-
-        /* أيقونة الشات العائمة */
-        .bt-toggle {
-            position: fixed; bottom: 25px; right: 25px;
-            background: var(--bt-blue); color: white; width: 60px; height: 60px;
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 24px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 2001;
-        }
+        .status-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; margin-left: 5px; }
 
         /* نافذة الشات */
         .chat-window {
-            display: none; position: fixed; bottom: 95px; right: 25px;
-            width: 340px; height: 500px; background: white; border-radius: 20px;
+            display: none; position: fixed; bottom: 20px; right: 20px;
+            width: 360px; height: 550px; background: white; border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2); flex-direction: column; z-index: 2000; overflow: hidden;
         }
-        .chat-header { background: var(--bt-blue); color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; }
-        
-        .chat-body { flex: 1; display: flex; flex-direction: column; background: #e5ddd5; }
-        .msg-list { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .msg { padding: 8px 12px; border-radius: 12px; font-size: 14px; max-width: 80%; cursor: pointer; }
+        .chat-header { background: var(--bt-blue); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .msg-list { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #e5ddd5; }
+
+        /* نظام الحظر */
+        .admin-panel { font-size: 11px; background: #333; color: #fff; padding: 5px 10px; }
+        .block-tag { color: var(--danger); cursor: pointer; font-weight: bold; }
+
+        /* الرسائل وعلامات الصح */
+        .msg { padding: 8px 12px; border-radius: 12px; font-size: 14px; max-width: 80%; position: relative; }
         .msg.sent { background: var(--sent-msg); align-self: flex-end; }
+        .ticks { font-size: 10px; text-align: left; color: #999; }
+        .ticks.read { color: var(--read-blue); }
 
         .chat-footer { display: flex; gap: 8px; padding: 10px; background: #f0f0f0; align-items: center; }
-        .tool-btn { cursor: pointer; font-size: 18px; }
-        .rec-active { color: red; animation: blink 1s infinite; }
-
-        input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        .main-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; font-weight: bold; }
-        @keyframes blink { 50% { opacity: 0; } }
+        .main-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 5px; border: none; cursor: pointer; }
     </style>
 </head>
-<body onclick="enableAudio()">
+<body onclick="startSystem()">
 
-    <div class="bt-toggle" onclick="toggleChat()">📡</div>
+    <button class="main-btn" onclick="toggleWindow()" style="position:fixed; top:20px; right:20px;">فتح رادار تاريشت 📡</button>
 
-    <div class="card">
-        <h2 style="color:var(--primary); margin-top:0;">نادي تاريشت</h2>
-        <p style="font-size:12px; color:#666;">اختر شخصيتك المفضلة للمراسلة</p>
-        
-        <div class="char-grid" id="charGrid">
-            <div class="char-item active" onclick="selChar(this, 'الفريق')"><img src="https://cdn-icons-png.flaticon.com/512/53/53283.png"><span>الفريق</span></div>
-            <div class="char-item" onclick="selChar(this, 'ميسي')"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"><span>ميسي</span></div>
-            <div class="char-item" onclick="selChar(this, 'رونالدو')"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"><span>رونالدو</span></div>
-            <div class="char-item" onclick="selChar(this, 'حكيمي')"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135823.png"><span>حكيمي</span></div>
-        </div>
-
-        <input type="text" id="userName" placeholder="الاسم الكامل">
-        <textarea id="userMsg" rows="2" placeholder="اكتب رسالتك للإدارة..."></textarea>
-        <button class="main-btn" onclick="sendToEmail()">إرسال عبر البريد الإلكتروني</button>
-    </div>
-
-    <div class="chat-window" id="chatWin">
+    <div class="chat-window" id="mainWin">
         <div class="chat-header">
-            <span>شات البلوتوث الذكي</span>
-            <span onclick="toggleChat()" style="cursor:pointer">×</span>
+            <span>رادار تاريشت (Bluetooth v5.0)</span>
+            <span onclick="toggleWindow()" style="cursor:pointer">×</span>
         </div>
-        <div class="chat-body">
+
+        <div class="admin-panel" id="adminLog">
+            جاري فحص الـ IPs النشطة... | <span id="ipCount">1</span> جهاز متصل
+        </div>
+
+        <div id="pairingArea" class="radar-section">
+            <button class="main-btn" style="width:100%; margin-bottom:10px;" onclick="searchDevices()">بحث عن أجهزة قريبة 🔗</button>
+            <div id="deviceList">
+                </div>
+        </div>
+
+        <div id="chatInterface" style="display:none; flex-direction:column; flex:1;">
             <div id="msgBox" class="msg-list"></div>
             <div class="chat-footer">
-                <label class="tool-btn">📷<input type="file" hidden accept="image/*" onchange="sendImg(this)"></label>
-                <span class="tool-btn" id="mic" onclick="recordVoice()">🎤</span>
-                <input type="text" id="chatInp" placeholder="اكتب..." style="flex:1; margin:0;">
-                <span class="tool-btn" style="color:var(--bt-blue)" onclick="sendText()">◀</span>
+                <span onclick="recordVoice()" id="micBtn" style="cursor:pointer">🎤</span>
+                <input type="text" id="chatInp" placeholder="اكتب رسالة..." style="flex:1; padding:8px; border-radius:10px; border:1px solid #ddd;">
+                <span onclick="sendText()" style="cursor:pointer; color:var(--bt-blue)">◀</span>
             </div>
         </div>
     </div>
 
     <script>
-        let selectedChar = "الفريق";
+        let connectedDevice = null;
+        let blockedIPs = JSON.parse(localStorage.getItem('blocked_list')) || [];
         let mediaRecorder;
         let audioChunks = [];
-        let audioEnabled = false;
 
-        function enableAudio() { if(!audioEnabled) { speak("مرحباً بك في نادي تاريشت"); audioEnabled = true; } }
-
-        function toggleChat() {
-            const win = document.getElementById('chatWin');
-            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+        function toggleWindow() {
+            const win = document.getElementById('mainWin');
+            win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        function selChar(el, name) {
-            document.querySelectorAll('.char-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            selectedChar = name;
+        // 1. البحث عن الأجهزة (Bluetooth API Simulation + Logic)
+        async function searchDevices() {
+            const list = document.getElementById('deviceList');
+            list.innerHTML = "<p style='font-size:12px; text-align:center;'>جاري المسح الترددي...</p>";
+            
+            try {
+                // محاولة الاتصال الحقيقي بالبلوتوث
+                if (navigator.bluetooth) {
+                    await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+                }
+            } catch(e) {}
+
+            setTimeout(() => {
+                const mockDevices = [
+                    { name: "جهاز ياسين", id: "192.168.1.45" },
+                    { name: "هاتف مجهول", id: "10.0.0.22" }
+                ];
+                list.innerHTML = "";
+                mockDevices.forEach(dev => {
+                    if (blockedIPs.includes(dev.id)) return;
+                    list.innerHTML += `
+                        <div class="device-card">
+                            <div><span class="status-dot"></span> <b>${dev.name}</b> <br><small>${dev.id}</small></div>
+                            <div>
+                                <button class="btn-sm" style="background:#2ecc71; color:white;" onclick="sendFriendRequest('${dev.name}', '${dev.id}')">طلب صداقة</button>
+                                <button class="btn-sm" style="background:#e74c3c; color:white;" onclick="blockDevice('${dev.id}')">حظر</button>
+                            </div>
+                        </div>`;
+                });
+            }, 1500);
         }
 
-        // إرسال البريد الإلكتروني (الخاصية القديمة المستعادة)
-        function sendToEmail() {
-            const name = document.getElementById('userName').value;
-            const msg = document.getElementById('userMsg').value;
-            if(!name || !msg) return alert("يرجى ملء البيانات");
-            const mailto = `mailto:marwnmellok@gmail.com?subject=رسالة من ${name}&body=الشخصية المختارة: ${selectedChar}%0Aالرسالة: ${msg}`;
-            window.location.href = mailto;
+        // 2. إرسال طلب صداقة
+        function sendFriendRequest(name, ip) {
+            alert(`تم إرسال طلب صداقة إلى ${name}... في انتظار القبول.`);
+            setTimeout(() => {
+                if(confirm(`وافق ${name} على طلبك. هل تريد بدء المحادثة الآمنة؟`)) {
+                    connectedDevice = { name, ip };
+                    document.getElementById('pairingArea').style.display = 'none';
+                    document.getElementById('chatInterface').style.display = 'flex';
+                    document.querySelector('.chat-header span').innerText = `متصل مع: ${name}`;
+                    speak(`تم الاتصال بـ ${name}`);
+                }
+            }, 2000);
         }
 
-        // إرسال نص في الشات
-        function sendText() {
-            const inp = document.getElementById('chatInp');
-            if(inp.value) { addMsg(inp.value, 'sent'); inp.value = ""; }
-        }
-
-        // إرسال صورة حقيقية
-        function sendImg(input) {
-            if(input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => addMsg(`<img src="${e.target.result}" style="width:100%; border-radius:8px;">`, 'sent');
-                reader.readAsDataURL(input.files[0]);
+        // 3. نظام الحظر (Block IP)
+        function blockDevice(ip) {
+            if(confirm(`هل تريد حظر الـ IP: ${ip} نهائياً؟`)) {
+                blockedIPs.push(ip);
+                localStorage.setItem('blocked_list', JSON.stringify(blockedIPs));
+                alert("تم إدراج الجهاز في القائمة السوداء.");
+                searchDevices();
             }
         }
 
-        // تسجيل صوت حقيقي
+        // 4. الشات والرسائل الصوتية (WhatsApp Style)
+        function sendText() {
+            const inp = document.getElementById('chatInp');
+            if(inp.value) { appendMsg(inp.value, 'sent'); inp.value = ""; }
+        }
+
         async function recordVoice() {
-            const mic = document.getElementById('mic');
+            const mic = document.getElementById('micBtn');
             if(!mediaRecorder || mediaRecorder.state === "inactive") {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
                 mediaRecorder.onstop = () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
                     const url = URL.createObjectURL(blob);
-                    addMsg(`<audio src="${url}" controls style="width:100%;"></audio>`, 'sent');
+                    const player = `<div style="display:flex; align-items:center; gap:5px;">
+                        <span onclick="new Audio('${url}').play()" style="cursor:pointer">▶️ سجل صوتي</span>
+                        <div style="width:60px; height:3px; background:#34b7f1;"></div>
+                    </div>`;
+                    appendMsg(player, 'sent');
                 };
                 mediaRecorder.start();
-                mic.classList.add('rec-active');
-                speak("بدأ التسجيل الآن");
+                mic.style.color = "red";
             } else {
                 mediaRecorder.stop();
-                mic.classList.remove('rec-active');
-                speak("تم إرسال التسجيل");
+                mic.style.color = "black";
             }
         }
 
-        // إضافة رسالة للشات مع ميزة النطق عند النقر
-        function addMsg(content, type) {
+        function appendMsg(content, type) {
             const box = document.getElementById('msgBox');
             const div = document.createElement('div');
             div.className = `msg ${type}`;
-            div.innerHTML = content;
-            
-            // جعل الرسالة تنطق عند النقر عليها (لسماع الرسائل)
-            div.onclick = () => { if(typeof content === 'string' && !content.includes('<')) speak(content); };
-            
+            div.innerHTML = `${content} <div class="ticks">✓✓</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;
+
+            // علامات الصح الزرقاء بعد القراءة
+            setTimeout(() => {
+                div.querySelector('.ticks').classList.add('read');
+            }, 2000);
         }
 
-        function speak(text) {
-            window.speechSynthesis.cancel();
-            const m = new SpeechSynthesisUtterance(text);
+        function speak(t) {
+            const m = new SpeechSynthesisUtterance(t);
             m.lang = "ar-SA";
             window.speechSynthesis.speak(m);
+        }
+
+        function startSystem() {
+            if(!window.sysStarted) {
+                speak("نظام تاريشت للاتصال المباشر مفعل");
+                window.sysStarted = true;
+            }
         }
     </script>
 </body>
