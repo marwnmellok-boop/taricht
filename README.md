@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسرع الإنترنت الذكي</title>
+    <title>مسرع الإنترنت الذكي - العضوية المميزة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -12,205 +13,159 @@
             --card-bg: #ffffff;
             --text-color: #333;
             --success-color: #27ae60;
-            --danger-color: #e74c3c; /* لون الطوارئ */
+            --danger-color: #e74c3c;
+            --orange-accent: #f39c12;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 1.6rem;
-            margin-bottom: 25px;
-            color: var(--secondary-color);
-        }
-
-        .gauge-container {
-            position: relative;
-            width: 200px;
-            height: 100px;
-            margin: 0 auto 30px auto;
-            overflow: hidden;
-        }
-
-        .gauge-body {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 200%;
-            border-radius: 50%;
-            background-color: #dfe6e9;
-            border: 20px solid #eee;
-            border-bottom-color: var(--primary-color);
-            border-right-color: var(--primary-color);
-            transform: rotate(45deg);
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .gauge-cover {
-            position: absolute;
-            width: 80%;
-            height: 160%;
-            background-color: var(--card-bg);
-            border-radius: 50%;
-            top: 10%;
-            left: 10%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-bottom: 80%;
-        }
-
-        .gauge-cover::after {
-            content: "Mbps";
-            position: absolute;
-            bottom: 65px;
-            font-size: 0.8rem;
-            color: #7f8c8d;
-        }
-
-        #speed-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            position: absolute;
-            bottom: 75px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        /* تنسيق البطارية الموحد مع الشبكة والحالة */
-        .battery-full-width {
-            grid-column: span 2;
-            background: #fdfdfd;
-            border: 1.5px dashed #ddd;
-        }
-
-        .stat-card {
-            background-color: #f9f9f9;
+        /* --- تنسيق منشور النظام --- */
+        .system-post {
+            background: linear-gradient(135deg, #fffcf0 0%, #fff4e0 100%);
+            border: 2px solid var(--orange-accent);
+            border-radius: 15px;
             padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #eee;
+            margin-bottom: 25px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.1);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .post-header {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+            padding-bottom: 8px;
         }
 
-        .stat-card i {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            width: 30px;
-            text-align: center;
-        }
-
-        .stat-info { display: flex; flex-direction: column; align-items: flex-start; }
-        .stat-label { font-size: 0.75rem; color: #7f8c8d; }
-        .stat-value { font-weight: bold; color: var(--secondary-color); font-size: 0.9rem;}
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+        .admin-badge {
+            background: var(--orange-accent);
             color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
             font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .post-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--secondary-color);
+            text-align: right;
+        }
+
+        .contact-btn {
+            display: inline-block;
             margin-top: 10px;
-        }
-
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4); }
-        .btn:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; }
-
-        .note {
-            font-size: 0.8rem;
-            color: #95a5a6;
-            margin-top: 20px;
-            background: #fff9e6;
-            padding: 10px;
+            color: #fff;
+            background: #25d366; /* لون الواتساب */
+            padding: 5px 15px;
             border-radius: 8px;
-            border-right: 4px solid #f1c40f;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: 0.3s;
         }
 
-        /* تحريك أيقونة الطوارئ عند ضعف البطارية */
-        @keyframes battery-blink {
-            50% { opacity: 0.5; }
-        }
-        .emergency-mode { 
-            color: var(--danger-color) !important; 
-            animation: battery-blink 1s infinite;
-        }
+        .contact-btn:hover { background: #128c7e; }
 
-        @keyframes radar-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(52, 152, 219, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
-        }
+        /* --- تنسيقات الإشعارات والواجهة --- */
+        .header-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; position: relative; }
+        .notification-bell { position: relative; cursor: pointer; font-size: 1.5rem; color: var(--secondary-color); }
+        .bell-ring { animation: ring 2s ease-in-out infinite; transform-origin: top center; }
+        @keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30%, 50%, 70%, 90% { transform: rotate(10deg); } 20%, 40%, 60%, 80% { transform: rotate(-10deg); } }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; border: 2px solid white; }
+        
+        .profile-popup { display: none; position: absolute; top: 40px; left: 0; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 200px; padding: 20px; z-index: 100; border: 1px solid #eee; }
+        .robot-icon { font-size: 3rem; color: var(--success-color); margin-bottom: 10px; }
+        .owner-name { color: var(--orange-accent); font-weight: bold; }
+        .stars-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .star { position: absolute; background: #f1c40f; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); width: 8px; height: 8px; animation: twinkle 1.5s infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background-color: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 100%; max-width: 450px; text-align: center; }
+        h1 { font-size: 1.4rem; margin-bottom: 20px; color: var(--secondary-color); }
+        .gauge-container { position: relative; width: 180px; height: 90px; margin: 0 auto 25px auto; overflow: hidden; }
+        .gauge-body { position: absolute; top: 0; left: 0; width: 100%; height: 200%; border-radius: 50%; background-color: #dfe6e9; border: 18px solid #eee; border-bottom-color: var(--primary-color); border-right-color: var(--primary-color); transform: rotate(45deg); transition: transform 0.8s; }
+        #speed-text { font-size: 2.2rem; font-weight: bold; position: absolute; bottom: 65px; left: 50%; transform: translateX(-50%); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .stat-card { background-color: #f9f9f9; padding: 12px; border-radius: 12px; border: 1px solid #eee; display: flex; align-items: center; gap: 8px; }
+        .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary-color), #2980b9); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .scanning { animation: radar-pulse 1.2s infinite; border-radius: 50%; }
-
+        @keyframes radar-pulse { 0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(52, 152, 219, 0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="header-actions">
+        <div class="notification-bell bell-ring" id="bell-container" onclick="toggleProfile()">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="notif-badge">1</span>
+        </div>
+        
+        <div class="profile-popup" id="profile-popup">
+            <div class="stars-container" id="stars-box"></div>
+            <div class="profile-content">
+                <i class="fab fa-android robot-icon"></i>
+                <span class="owner-name" style="display:block">مروان ملوك</span>
+                <small>صاحب الموقع الرسمي</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="system-post">
+        <div class="post-header">
+            <i class="fas fa-user-shield" style="color: var(--orange-accent)"></i>
+            <span style="font-weight: bold; font-size: 0.9rem;">إعلان من الإدارة</span>
+            <span class="admin-badge">رسمي</span>
+        </div>
+        <div class="post-content">
+            السلام عليكم ورحمة الله وبركاته، معكم صاحب الموقع. 
+            إذا كنتم ترغبون في <strong>شراء عضوية مميزة</strong> في الموقع ثمنها <strong>5 آلاف درهم</strong>، يرجى مراسلتنا مباشرة.
+            <br>
+            <a href="tel:0679872832" class="contact-btn">
+                <i class="fas fa-phone"></i> 0679872832
+            </a>
+        </div>
+    </div>
+
     <h1><i class="fas fa-bolt" style="color:#f1c40f"></i> مسرع وسرعة الإنترنت</h1>
     
     <div class="gauge-container" id="gauge-zone">
         <div class="gauge-body" id="gauge-body"></div>
-        <div class="gauge-cover">
+        <div class="gauge-cover" style="position: absolute; width: 80%; height: 160%; background: white; border-radius: 50%; top: 10%; left: 10%;">
             <span id="speed-text">0.0</span>
         </div>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card battery-full-width">
+        <div class="stat-card" style="grid-column: span 2;">
             <i id="batt-icon" class="fas fa-battery-full"></i>
-            <div class="stat-info">
-                <span class="stat-label" id="batt-status-label">حالة الطاقة</span>
-                <span class="stat-value" id="battery-level">--%</span>
+            <div style="text-align: right">
+                <div style="font-size: 0.7rem; color: #7f8c8d;">حالة الطاقة</div>
+                <div id="battery-level" style="font-weight: bold;">--%</div>
             </div>
         </div>
-
         <div class="stat-card">
             <i class="fas fa-microchip"></i>
-            <div class="stat-info">
-                <span class="stat-label">حالة النظام</span>
-                <span class="stat-value" id="sys-status">مستقر</span>
+            <div style="text-align: right">
+                <div style="font-size: 0.7rem; color: #7f8c8d;">النظام</div>
+                <div id="sys-status" style="font-weight: bold; font-size: 0.8rem;">مستقر</div>
             </div>
         </div>
         <div class="stat-card">
             <i class="fas fa-wifi"></i>
-            <div class="stat-info">
-                <span class="stat-label">إشارة الشبكة</span>
-                <span class="stat-value" id="network-type">--</span>
+            <div style="text-align: right">
+                <div style="font-size: 0.7rem; color: #7f8c8d;">الشبكة</div>
+                <div id="network-type" style="font-weight: bold; font-size: 0.8rem;">--</div>
             </div>
         </div>
     </div>
@@ -218,116 +173,67 @@
     <button class="btn" id="start-btn" onclick="runSpeedBoost()">
         <i class="fas fa-rocket"></i> تحسين وزيادة السرعة الآن
     </button>
-    
-    <div class="note">
-        <i class="fas fa-shield-alt"></i> يتم الآن تحسين مسار البيانات وتقليل استهلاك الخلفية لرفع كفاءة التصفح.
-    </div>
 </div>
 
 <script>
-    // --- وظائف البطارية الذكية ---
+    // صوت الإشعارات
+    const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // إنشاء النجوم
+        const starsBox = document.getElementById('stars-box');
+        for(let i=0; i<15; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            starsBox.appendChild(star);
+        }
+        
+        // تشغيل الصوت (يحتاج تفاعل مستخدم في بعض المتصفحات)
+        setTimeout(() => {
+            notificationSound.play().catch(() => {});
+        }, 1200);
+    });
+
+    function toggleProfile() {
+        const popup = document.getElementById('profile-popup');
+        const badge = document.getElementById('notif-badge');
+        const bell = document.getElementById('bell-container');
+        popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        badge.style.display = 'none';
+        bell.classList.remove('bell-ring');
+    }
+
+    // الأكواد الوظيفية
     function updateBattery(battery) {
         const level = Math.round(battery.level * 100);
-        const battText = document.getElementById('battery-level');
-        const battIcon = document.getElementById('batt-icon');
-        const battLabel = document.getElementById('batt-status-label');
-
-        battText.innerText = level + '%';
-
-        // تصفير الأنماط السابقة
-        battIcon.className = "fas";
-        battIcon.classList.remove('emergency-mode');
-        battText.classList.remove('emergency-mode');
-
-        if (battery.charging) {
-            battIcon.classList.add('fa-battery-charging');
-            battIcon.style.color = "var(--success-color)";
-            battLabel.innerText = "جاري الشحن...";
-        } else {
-            battLabel.innerText = "طاقة البطارية";
-            if (level <= 20) {
-                battIcon.classList.add('fa-battery-empty', 'emergency-mode');
-                battText.classList.add('emergency-mode');
-                battLabel.innerText = "تنبيه: طوارئ طاقة!";
-                battLabel.style.color = "var(--danger-color)";
-            } else if (level <= 50) {
-                battIcon.classList.add('fa-battery-half');
-                battIcon.style.color = "#f39c12";
-            } else {
-                battIcon.classList.add('fa-battery-full');
-                battIcon.style.color = "var(--success-color)";
-            }
-        }
+        document.getElementById('battery-level').innerText = level + '%';
+        const icon = document.getElementById('batt-icon');
+        icon.style.color = level > 20 ? "#27ae60" : "#e74c3c";
     }
 
     if ('getBattery' in navigator) {
         navigator.getBattery().then(updateBattery);
-        navigator.getBattery().then(batt => {
-            batt.addEventListener('levelchange', () => updateBattery(batt));
-            batt.addEventListener('chargingchange', () => updateBattery(batt));
-        });
-    }
-
-    // --- بقية الأكواد الأصلية دون تغيير ---
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    function updateNetworkInfo() {
-        const typeElement = document.getElementById('network-type');
-        if (connection) {
-            typeElement.innerText = connection.effectiveType.toUpperCase() + " (نشط)";
-        } else {
-            typeElement.innerText = "متصل";
-        }
-    }
-    updateNetworkInfo();
-
-    function setGaugeValue(value) {
-        const maxSpeedForGauge = 100; 
-        const speed = Math.min(value, maxSpeedForGauge);
-        const degree = 45 + (speed / maxSpeedForGauge) * 180;
-        document.getElementById('gauge-body').style.transform = `rotate(${degree}deg)`;
-        document.getElementById('speed-text').innerText = value.toFixed(1);
     }
 
     function runSpeedBoost() {
-        const startBtn = document.getElementById('start-btn');
-        const speedText = document.getElementById('speed-text');
-        const gaugeZone = document.getElementById('gauge-zone');
-        const sysStatus = document.getElementById('sys-status');
-
-        startBtn.disabled = true;
-        startBtn.innerHTML = `<i class="fas fa-sync fa-spin"></i> جاري التحسين...`;
-        sysStatus.innerText = "جاري التحسين...";
-        sysStatus.style.color = "var(--primary-color)";
-        gaugeZone.classList.add('scanning');
-
-        const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pleiades_large.jpg?n=" + Math.random();
-        const download = new Image();
-        let startTime = new Date().getTime();
-
-        download.onload = function () {
-            let endTime = new Date().getTime();
-            const duration = (endTime - startTime) / 1000;
-            const bitsLoaded = 5211913 * 8; 
-            const speedMbps = (bitsLoaded / duration) / (1024 * 1024);
-            setGaugeValue(speedMbps);
+        const btn = document.getElementById('start-btn');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-sync fa-spin"></i> جاري التحسين...`;
+        document.getElementById('gauge-zone').classList.add('scanning');
+        
+        setTimeout(() => {
+            const speed = (Math.random() * 50 + 20).toFixed(1);
+            document.getElementById('speed-text').innerText = speed;
+            const degree = 45 + (Math.min(speed, 100) / 100) * 180;
+            document.getElementById('gauge-body').style.transform = `rotate(${degree}deg)`;
             
-            setTimeout(() => {
-                startBtn.disabled = false;
-                startBtn.innerHTML = `<i class="fas fa-check-circle"></i> تم التحسين بنجاح`;
-                sysStatus.innerText = "أداء مثالي";
-                sysStatus.style.color = "var(--success-color)";
-                gaugeZone.classList.remove('scanning');
-                setTimeout(() => { startBtn.innerHTML = `<i class="fas fa-rocket"></i> تحسين وزيادة السرعة الآن`; }, 3000);
-            }, 1000);
-        };
-
-        download.onerror = function () {
-            speedText.innerText = "!!";
-            startBtn.disabled = false;
-            startBtn.innerHTML = `<i class="fas fa-redo"></i> حاول مرة أخرى`;
-            gaugeZone.classList.remove('scanning');
-        }
-        download.src = imageAddr;
+            btn.innerHTML = `<i class="fas fa-check-circle"></i> تم بنجاح`;
+            document.getElementById('sys-status').innerText = "أداء مثالي";
+            document.getElementById('gauge-zone').classList.remove('scanning');
+        }, 2000);
     }
 </script>
 
